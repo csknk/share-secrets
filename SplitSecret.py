@@ -13,17 +13,31 @@ class SplitSecret:
     def __init__(self):
         self.nShares = 0
         self.nRequired = 0
-        self.label = ""
-        self.report = ""
+        self.label = ''
+        self.report = ''
+        self.baseDir = ''
         self.loadConfig()
         self.shredReport = {}
+        self.setBaseDir()
+        self.getUserData()
 
     def run(self):
-        self.getUserData()
         self.runCmd()
         self.output()
         self.saveToFiles()
         self.cleanUp()
+
+    def setBaseDir(self):
+        cmd = [
+            'zenity',
+            '--file-selection',
+            '--directory',
+            '--title=Select the directory in which to save shares.'
+            ]
+        try:
+            self.baseDir = subprocess.check_output(cmd).decode('utf-8')
+        except subprocess.CalledProcessError as e:
+            print(e.output)
 
     def getUserData(self):
         self.nShares = input("Enter the required number of shares:")
@@ -58,7 +72,7 @@ class SplitSecret:
 
     # Output fragments to files
     def saveToFiles(self):
-        self.dir = '/home/david/sysadmin/share-secrets/test/shared-secrets-' + str(int(time.time()))
+        self.dir = self.baseDir + '/shared-secrets-' + str(int(time.time()))
         pathlib.Path(self.dir).mkdir(parents=True, exist_ok=True, mode=0o755)
         self.createReadme(self.dir)
 

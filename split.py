@@ -1,7 +1,9 @@
 #!/usr/bin/python3
-import subprocess
+import subprocess, sys, getopt
 from SplitSecret import SplitSecret
+
 def main():
+
     s = SplitSecret()
     s.run()
 

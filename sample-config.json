@@ -1,0 +1,9 @@
+{
+  "contact": {
+    "name": "Joe Bloggs",
+    "email": "joe@gmail.com"
+  },
+  "fragments": {
+    "filenameRoot": "JB-secret"
+  }
+}
