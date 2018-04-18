@@ -15,7 +15,6 @@ shred -vfzu filename.txt
 # MAKE SURE YOU'RE IN THE RIGHT DIRECTORY!
 cd /path/to/shares
 find . -type f -exec shred -vfzu {} +
-
 ```
 ## Configuration
 Save `sample-config.json` as `config.json` and enter your personal details.
