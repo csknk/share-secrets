@@ -35,7 +35,8 @@ class SplitSecret:
             '--title=Select the directory in which to save shares.'
             ]
         try:
-            self.baseDir = subprocess.check_output(cmd).decode('utf-8')
+            self.baseDir = subprocess.check_output(cmd).decode('utf-8').strip()
+            print("baseDir set: {}".format(self.baseDir))
         except subprocess.CalledProcessError as e:
             print(e.output)
 
