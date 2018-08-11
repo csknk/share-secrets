@@ -43,6 +43,9 @@ tr -dc '[:alnum:][:punct:]' < /dev/urandom | head -c 32 ; echo
 ```
 
 ## References
+>Shamir's Secret Sharing is defined with Lagrange's polynomials, precisely: there is a unique polynomial of degree at most t-1 which goes through t given points, and it is rebuilt as a linear combinations of Lagrange's polynomials. When the secret is shared, a random polynomial P of degree at most t-1 is generated, such that P(0) is the secret. Then user i receives share P(i). Any t shares are enough to rebuild P and recompute P(0)
+> [Tom Leek in SO comment][12]
+
 * [ssss][1] - C implementation, present by default in standard Tails installation
 * [Shamir's Secret Sharing][2] - an overview, with sample Python code
 * [Shred][3] - securely delete shares on a *nix system
@@ -53,6 +56,7 @@ tr -dc '[:alnum:][:punct:]' < /dev/urandom | head -c 32 ; echo
 * [Blockstack secret sharing][7] - python implementation
 * [Interesting fork of libgfshare][9]
 * [Secret Sharing Made Short][10](Hugo Krawczyk, 2001)
+* [Issues with SSSS Package][11]
 
 [1]: http://point-at-infinity.org/ssss/
 [2]: https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
@@ -64,3 +68,5 @@ tr -dc '[:alnum:][:punct:]' < /dev/urandom | head -c 32 ; echo
 [8]: http://manpages.ubuntu.com/manpages/xenial/en/man7/gfshare.7.html
 [9]: https://github.com/jcushman/libgfshare
 [10]: https://link.springer.com/chapter/10.1007%2F3-540-48329-2_12
+[11]: https://security.stackexchange.com/a/83924/58780
+[12]: https://security.stackexchange.com/a/49311/58780
