@@ -35,7 +35,8 @@ Useful Resources
 Generate printable password:
 
 ```sh
-# Generate a pseudo random 32 printable character password
+# Generate a pseudo random 44 printable character password
+# Note that a 32 byte input resolves to 44 base64 encoded characters
 head -c 32 /dev/random | base64
 
 # Generate printable password, alnum + punctuation
@@ -44,6 +45,7 @@ tr -dc '[:alnum:][:punct:]' < /dev/urandom | head -c 32 ; echo
 
 ## References
 >Shamir's Secret Sharing is defined with Lagrange's polynomials, precisely: there is a unique polynomial of degree at most t-1 which goes through t given points, and it is rebuilt as a linear combinations of Lagrange's polynomials. When the secret is shared, a random polynomial P of degree at most t-1 is generated, such that P(0) is the secret. Then user i receives share P(i). Any t shares are enough to rebuild P and recompute P(0)
+>
 > [Tom Leek in SO comment][12]
 
 * [ssss][1] - C implementation, present by default in standard Tails installation
