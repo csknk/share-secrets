@@ -1,5 +1,5 @@
 config.json
-
+results/
 # See https://github.com/github/gitignore/blob/master/Python.gitignore
 # Byte-compiled / optimized / DLL files
 __pycache__/
