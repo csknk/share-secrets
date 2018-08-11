@@ -16,16 +16,51 @@ shred -vfzu filename.txt
 cd /path/to/shares
 find . -type f -exec shred -vfzu {} +
 ```
+If you're in a Tails session, you can use the "Wipe" utility in the Nautilus (GUI) file manager.
+
 ## Configuration
 Save `sample-config.json` as `config.json` and enter your personal details.
 
 Each share file will contain your name and an email address as specified in the config - this may make it easier to recover secret shares. The file also contains instructions for the share holder.
 
+## Rebuild
+To rebuild, just run `ssss-combine` on the command line. Pass the required threshold number of the generated shares (in any order) to:
+```
+# For example, if the threshold is 3
+ssss-combine -t 3
+```
+
+Useful Resources
+----------------
+Generate printable password:
+
+```sh
+# Generate a pseudo random 32 printable character password
+head -c 32 /dev/random | base64
+
+# Generate printable password, alnum + punctuation
+tr -dc '[:alnum:][:punct:]' < /dev/urandom | head -c 32 ; echo
+```
+
 ## References
-* [ssss][1]
-* [Shamir's Secret Sharing][2]
-* [Shred][3]
+* [ssss][1] - C implementation, present by default in standard Tails installation
+* [Shamir's Secret Sharing][2] - an overview, with sample Python code
+* [Shred][3] - securely delete shares on a *nix system
+* [Python gfshare package][4]
+* [Description of python-gfshare][5]
+* [libgfshare source package in Ubuntu][6] - C implementation
+* [libgfshare man page][8]
+* [Blockstack secret sharing][7] - python implementation
+* [Interesting fork of libgfshare][9]
+* [Secret Sharing Made Short][10](Hugo Krawczyk, 2001)
 
 [1]: http://point-at-infinity.org/ssss/
 [2]: https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
 [3]: https://manpages.debian.org/jessie/coreutils/shred.1.en.html
+[4]: https://lamby.github.io/python-gfshare/
+[5]: https://chris-lamb.co.uk/projects/python-gfshare
+[6]: https://launchpad.net/ubuntu/+source/libgfshare/1.0.5-3
+[7]: https://github.com/blockstack/secret-sharing
+[8]: http://manpages.ubuntu.com/manpages/xenial/en/man7/gfshare.7.html
+[9]: https://github.com/jcushman/libgfshare
+[10]: https://link.springer.com/chapter/10.1007%2F3-540-48329-2_12
