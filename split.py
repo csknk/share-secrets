@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import subprocess, sys, getopt
 from SplitSecret import SplitSecret
 from CreateFiles import CreateFiles

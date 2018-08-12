@@ -9,6 +9,7 @@ from string import Template
 import textwrap
 import click
 import qrcode
+import pydf
 
 class CreateFiles():
     def __init__(self, sharesList, label=''):
@@ -19,7 +20,6 @@ class CreateFiles():
         self.loadConfig()
         self.setBaseDir()
         self.saveToFiles()
-        self.makeQRCodes()
         self.cleanUp()
 
     def loadConfig(self):
@@ -45,48 +45,69 @@ class CreateFiles():
         pathlib.Path(self.dir).mkdir(parents=True, exist_ok=True, mode=0o755)
         self.createReadme(self.dir)
 
+        for index, fragment in enumerate(self.sharesList):
+            filepath = "{dir}/{rootname}-{label}-{index}".format(
+                dir=self.dir,
+                rootname=self.config['fragments']['filenameRoot'],
+                label=self.label,
+                index=str(index + 1)
+            )
+            self.createFileMarkdown(fragment=fragment, filepath=filepath)
+            self.createFilePDF(fragment=fragment, filepath=filepath)
+
+    def createFileMarkdown(self, **kwargs):
+        if kwargs:
+            fragment = kwargs["fragment"]
+            filepath = kwargs["filepath"]
         d = {
         'label': self.label,
         'timestamp': datetime.datetime.now().strftime("%d-%b-%Y %H:%M:%S"),
         'report': self.report,
         'contactName': self.config['contact']['name'],
-        'contactEmail': self.config['contact']['email']
+        'contactEmail': self.config['contact']['email'],
+        'fragment': fragment
         }
-        filein = open('text/fragment_header.txt')
+        filein = open('text/fragment.md')
         src = Template(filein.read())
-        fragmentHeaderContent = src.substitute(d)
+        content = src.substitute(d)
+        file = open(filepath + ".md", 'w')
+        file.write(content)
+        file.close()
 
-        for index, fragment in enumerate(self.sharesList):
-            filepath = "{dir}/{rootname}-{label}-{index}.txt".format(
-                dir=self.dir,
-                rootname=self.config['fragments']['filenameRoot'],
-                label=self.label,
-                index=str(index + 1)
-            )
-            # results/shared-secrets-1534005473/DE--5.txt
-            file = open(filepath, 'w')
-            file.write(fragmentHeaderContent)
-            file.write(fragment + '\n')
-            file.close()
+    # Output fragments to PDF files
+    def createFilePDF(self, **kwargs):
+        if kwargs:
+            fragment = kwargs["fragment"]
+            filepath = kwargs["filepath"]
 
-    def makeQRCodes(self):
-        for index, fragment in enumerate(self.sharesList):
-            filepath = "{dir}/{rootname}-{label}-{index}.png".format(
-                dir=self.dir,
-                rootname=self.config['fragments']['filenameRoot'],
-                label=self.label,
-                index=str(index + 1)
-            )
-            qr = qrcode.QRCode(
-                version=1,
-                error_correction=qrcode.constants.ERROR_CORRECT_L,
-                box_size=10,
-                border=4,
-            )
-            qr.add_data(fragment)
-            qr.make(fit=True)
-            img = qr.make_image(fill_color="black", back_color="white")
-            img.save(filepath)
+        qrImageFile = self.makeQRCode(fragment);
+        qrImageFile.save("{}{}".format(filepath, ".png"))
+        HTMLContent = {
+            'label': self.label,
+            'timestamp': datetime.datetime.now().strftime("%d-%b-%Y %H:%M:%S"),
+            'report': self.report,
+            'contactName': self.config['contact']['name'],
+            'contactEmail': self.config['contact']['email'],
+            'fragment': fragment,
+            'imgSrc': filepath + ".png"
+        }
+        HTMLfilein = open('text/fragment.html')
+        HTMLsrc = Template(HTMLfilein.read())
+        HTMLfragment = HTMLsrc.substitute(HTMLContent)
+        pdf = pydf.generate_pdf(HTMLfragment, image_quality=100, image_dpi=1000)
+        with open(filepath + ".pdf", 'wb') as f:
+            f.write(pdf)
+
+    def makeQRCode(self, fragment):
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(fragment)
+        qr.make(fit=True)
+        return qr.make_image(fill_color="black", back_color="white")
 
     def createReadme(self, dir):
         d = {
@@ -96,7 +117,7 @@ class CreateFiles():
         filein = open('text/readme.txt')
         src = Template(filein.read())
         readmeContent = src.substitute(d)
-        readme = dir + '/readme.md'
+        readme = dir + '/README.md'
         file = open(readme, 'w')
         file.write(textwrap.dedent(readmeContent))
         file.close()
@@ -104,7 +125,7 @@ class CreateFiles():
     def cleanUp(self):
         print("Your secrets have been split and saved as individual files. Holding these files in one place may be a security vulnerability.")
         print("Files:")
-        pathlist = Path(self.dir).glob('**/*.txt')
+        pathlist = Path(self.dir).glob('**/*')
         for path in pathlist:
             print(path)
         if click.confirm("Do you want to securely shred the files?", default=True):

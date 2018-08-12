@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title>Shared Secret Fragment for $label</title>
+</head>
+<body>
+  <h1>Shared Secret Fragment for $label</h1>
+  <p>Created: <strong>$timestamp</strong></p>
+  <p>Originator: <strong>$contactName</strong></p>
+  <p>Email: <a href="mailto:$contactEmail">$contactEmail</a></p>
+  <hr>
+  <p>This shared secret fragment can be safely shared - it cannot be used on it's own to rebuild the original secret.
+    Sharing distributed secrets is a good way to safeguard important data. Re-assembling distributed secret shares
+    allows the originator to recover the original secret.</p>
+
+  <p>If requested, please return this file to the sender or their legal representative.</p>
+
+  <h2>Rebuild Instructions</h2>
+  <p>Creation of shares by means of `ssss-split`: $report</br>
+  To reconstruct the secret, pass n of the generated shares (in any order) to:
+  <pre><code>
+  ssss-combine -t n
+  </code></pre>
+  You can achieve this conveniently by running a Tails session in an offline computer -
+  the ssss package is installed in Tails by default.</p>
+
+  <p>Tails: <a href="https://tails.boum.org/">https://tails.boum.org/</a></p>
+  <h2>Fragment</h2>
+  <h3><strong>$fragment</strong></h3>
+  <img src="$imgSrc" alt="">
+</body>
+</html>

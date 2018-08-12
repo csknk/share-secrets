@@ -19,6 +19,9 @@ ssss-combine -t n
 You can achieve this conveniently by running a Tails session in an offline computer -
 the ssss package is installed in Tails by default.
 
-Tails: https://tails.boum.org/
---------------------------------------------------------------------------------
+Tails: (https://tails.boum.org/)[https://tails.boum.org/]
+
 ## Fragment
+---
+$fragment
+---
