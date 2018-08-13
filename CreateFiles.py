@@ -8,8 +8,6 @@ import json
 from string import Template
 import textwrap
 import click
-import qrcode
-import pydf
 
 class CreateFiles():
     def __init__(self, sharesList, label=''):
@@ -53,7 +51,6 @@ class CreateFiles():
                 index=str(index + 1)
             )
             self.createFileMarkdown(fragment=fragment, filepath=filepath)
-            self.createFilePDF(fragment=fragment, filepath=filepath)
 
     def createFileMarkdown(self, **kwargs):
         if kwargs:
@@ -73,41 +70,6 @@ class CreateFiles():
         file = open(filepath + ".md", 'w')
         file.write(content)
         file.close()
-
-    # Output fragments to PDF files
-    def createFilePDF(self, **kwargs):
-        if kwargs:
-            fragment = kwargs["fragment"]
-            filepath = kwargs["filepath"]
-
-        qrImageFile = self.makeQRCode(fragment);
-        qrImageFile.save("{}{}".format(filepath, ".png"))
-        HTMLContent = {
-            'label': self.label,
-            'timestamp': datetime.datetime.now().strftime("%d-%b-%Y %H:%M:%S"),
-            'report': self.report,
-            'contactName': self.config['contact']['name'],
-            'contactEmail': self.config['contact']['email'],
-            'fragment': fragment,
-            'imgSrc': filepath + ".png"
-        }
-        HTMLfilein = open('text/fragment.html')
-        HTMLsrc = Template(HTMLfilein.read())
-        HTMLfragment = HTMLsrc.substitute(HTMLContent)
-        pdf = pydf.generate_pdf(HTMLfragment, image_quality=100, image_dpi=1000)
-        with open(filepath + ".pdf", 'wb') as f:
-            f.write(pdf)
-
-    def makeQRCode(self, fragment):
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data(fragment)
-        qr.make(fit=True)
-        return qr.make_image(fill_color="black", back_color="white")
 
     def createReadme(self, dir):
         d = {
