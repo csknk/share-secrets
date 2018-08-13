@@ -53,6 +53,7 @@ class CreateFiles():
                 index=str(index + 1)
             )
             self.createFileMarkdown(fragment=fragment, filepath=filepath)
+            self.createFileHTML(fragment=fragment, filepath=filepath)
             self.createFilePDF(fragment=fragment, filepath=filepath)
 
     def createFileMarkdown(self, **kwargs):
@@ -72,6 +73,26 @@ class CreateFiles():
         content = src.substitute(d)
         file = open(filepath + ".md", 'w')
         file.write(content)
+        file.close()
+
+    # Output fragments to PDF files
+    def createFileHTML(self, **kwargs):
+        if kwargs:
+            fragment = kwargs["fragment"]
+            filepath = kwargs["filepath"]
+
+        HTMLContent = {
+            'label': self.label,
+            'timestamp': datetime.datetime.now().strftime("%d-%b-%Y %H:%M:%S"),
+            'report': self.report,
+            'contactName': self.config['contact']['name'],
+            'contactEmail': self.config['contact']['email'],
+            'fragment': fragment,
+        }
+        filein = open('text/fragment-basic.html')
+        src = Template(filein.read())
+        file = open(filepath + ".html", 'w')
+        file.write(src.substitute(HTMLContent))
         file.close()
 
     # Output fragments to PDF files
