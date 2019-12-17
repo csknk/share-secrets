@@ -10,15 +10,27 @@ body,html{height:100%;width:100%;margin:0;padding:0;left:0;top:0;font-size:100%}
 <body>
 <div class="container">
   <h1>Shared Secret Fragment for $label</h1>
-  <p>Created: <strong>$timestamp</strong></p>
-  <p>Originator: <strong>$contactName</strong></p>
-  <p>Email: <a href="mailto:$contactEmail">$contactEmail</a></p>
   <hr>
-  <p>This shared secret fragment can be safely shared - it cannot be used on it's own to rebuild the original secret.
-    Sharing distributed secrets is a good way to safeguard important data. Re-assembling distributed secret shares
-    allows the originator to recover the original secret.</p>
-
-  <p>If requested, please return this file to the sender or their legal representative.</p>
+  <p style="overflow-wrap: break-word;"><strong>$fragment</strong></p>
+  <hr>
+  <div class="row">
+    <div class="col-6">
+      <ul>
+        <li>Created: <strong>$timestamp</strong></li>
+        <li>Originator: <strong>$contactName</strong></li>
+        <li>Email: <a href="mailto:$contactEmail">$contactEmail</a></li>
+      </ul>
+      <p>This shared secret fragment can be safely shared - it cannot be used on it's own to rebuild the original secret.
+        Sharing distributed secrets is a good way to safeguard important data. Re-assembling distributed secret shares
+        allows the originator to recover the original secret.</p>
+      <p>If requested, please return this file to the sender or their legal representative.</p>
+    </div>
+    <div class="col-5">
+      <img src="$imgSrc" title="$fragment">
+      <p style="overflow-wrap: break-word;"><strong>$fragment</strong></p>
+    </div>
+  </div>
+  <hr>
 
   <h2>Rebuild Instructions</h2>
   <p>Creation of shares by means of `ssss-split`: $report</br>
@@ -30,9 +42,6 @@ body,html{height:100%;width:100%;margin:0;padding:0;left:0;top:0;font-size:100%}
   the ssss package is installed in Tails by default.</p>
 
   <p>Tails: <a href="https://tails.boum.org/">https://tails.boum.org/</a></p>
-  <h2>Fragment</h2>
-  <h3><strong>$fragment</strong></h3>
-  <img src="$imgSrc" alt="">
 </div>
 </body>
 </html>

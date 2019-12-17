@@ -53,8 +53,8 @@ class CreateFiles():
                 index=str(index + 1)
             )
             self.createFileMarkdown(fragment=fragment, filepath=filepath)
-            self.createFileHTML(fragment=fragment, filepath=filepath)
             self.createFilePDF(fragment=fragment, filepath=filepath)
+            self.createFileHTML(fragment=fragment, filepath=filepath)
 
     def createFileMarkdown(self, **kwargs):
         if kwargs:
@@ -88,6 +88,7 @@ class CreateFiles():
             'contactName': self.config['contact']['name'],
             'contactEmail': self.config['contact']['email'],
             'fragment': fragment,
+            'imgSrc': filepath + ".png"
         }
         filein = open('text/fragment-basic.html')
         src = Template(filein.read())
