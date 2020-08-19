@@ -3,7 +3,7 @@ Flask==1.0.2
 itsdangerous==0.24
 Jinja2>=2.10.1
 MarkupSafe==1.0
-Pillow==6.2.0
+Pillow>=7.1.0
 python-pdf==0.36
 qrcode==6.0
 six==1.11.0
