@@ -12,51 +12,51 @@ import qrcode
 import pydf
 
 class CreateFiles():
-    def __init__(self, sharesList, label=''):
-        self.sharesList = sharesList
+    def __init__(self, shares_list, label=''):
+        self.shares_list = shares_list
         self.label = label
         self.report = ''
-        self.baseDir = ''
-        self.loadConfig()
-        self.setBaseDir()
-        self.saveToFiles()
-        self.cleanUp()
+        self.base_dir = ''
+        self.load_config()
+        self.set_base_dir()
+        self.save_to_files()
+        self.clean_up()
 
-    def loadConfig(self):
+    def load_config(self):
         with open('config.json') as f:
             self.config = json.load(f)
 
-    def setBaseDir(self):
+    def set_base_dir(self):
         cmd = [
             'zenity',
             '--file-selection',
             '--directory',
-            '--title=Select the directory in which to save shares.'
+            '--title=_select the directory in which to save shares.'
             ]
         try:
-            self.baseDir = subprocess.check_output(cmd).decode('utf-8').strip()
-            print("baseDir set: {}".format(self.baseDir))
-        except subprocess.CalledProcessError as e:
+            self.base_dir = subprocess.check_output(cmd).decode('utf-8').strip()
+            print("base_dir set: {}".format(self.base_dir))
+        except subprocess._called_process_error as e:
             print(e.output)
 
     # Output fragments to files
-    def saveToFiles(self):
-        self.dir = self.baseDir + '/shared-secrets-' + str(int(time.time()))
+    def save_to_files(self):
+        self.dir = self.base_dir + '/shared-secrets-' + str(int(time.time()))
         pathlib.Path(self.dir).mkdir(parents=True, exist_ok=True, mode=0o755)
-        self.createReadme(self.dir)
+        self.create_readme(self.dir)
 
-        for index, fragment in enumerate(self.sharesList):
+        for index, fragment in enumerate(self.shares_list):
             filepath = "{dir}/{rootname}-{label}-{index}".format(
                 dir=self.dir,
                 rootname=self.config['fragments']['filenameRoot'],
                 label=self.label,
                 index=str(index + 1)
             )
-            self.createFileMarkdown(fragment=fragment, filepath=filepath)
-            self.createFilePDF(fragment=fragment, filepath=filepath)
-            self.createFileHTML(fragment=fragment, filepath=filepath)
+            self.create_file_markdown(fragment=fragment, filepath=filepath)
+            self.create_file_pdf(fragment=fragment, filepath=filepath)
+            self.create_file_html(fragment=fragment, filepath=filepath)
 
-    def createFileMarkdown(self, **kwargs):
+    def create_file_markdown(self, **kwargs):
         if kwargs:
             fragment = kwargs["fragment"]
             filepath = kwargs["filepath"]
@@ -64,8 +64,8 @@ class CreateFiles():
         'label': self.label,
         'timestamp': datetime.datetime.now().strftime("%d-%b-%Y %H:%M:%S"),
         'report': self.report,
-        'contactName': self.config['contact']['name'],
-        'contactEmail': self.config['contact']['email'],
+        'contact_name': self.config['contact']['name'],
+        'contact_email': self.config['contact']['email'],
         'fragment': fragment
         }
         filein = open('text/fragment.md')
@@ -75,52 +75,52 @@ class CreateFiles():
         file.write(content)
         file.close()
 
-    # Output fragments to PDF files
-    def createFileHTML(self, **kwargs):
+    # _output fragments to _p_d_f files
+    def create_file_html(self, **kwargs):
         if kwargs:
             fragment = kwargs["fragment"]
             filepath = kwargs["filepath"]
 
-        HTMLContent = {
+        html_content = {
             'label': self.label,
             'timestamp': datetime.datetime.now().strftime("%d-%b-%Y %H:%M:%S"),
             'report': self.report,
-            'contactName': self.config['contact']['name'],
-            'contactEmail': self.config['contact']['email'],
+            'contact_name': self.config['contact']['name'],
+            'contact_email': self.config['contact']['email'],
             'fragment': fragment,
-            'imgSrc': filepath + ".png"
+            'img_src': filepath + ".png"
         }
         filein = open('text/fragment-basic.html')
         src = Template(filein.read())
         file = open(filepath + ".html", 'w')
-        file.write(src.substitute(HTMLContent))
+        file.write(src.substitute(html_content))
         file.close()
 
-    # Output fragments to PDF files
-    def createFilePDF(self, **kwargs):
+    # Output fragments to pdf files
+    def create_file_pdf(self, **kwargs):
         if kwargs:
             fragment = kwargs["fragment"]
             filepath = kwargs["filepath"]
 
-        qrImageFile = self.makeQRCode(fragment);
-        qrImageFile.save("{}{}".format(filepath, ".png"))
-        HTMLContent = {
+        qr_image_file = self.make_qr_code(fragment);
+        qr_image_file.save("{}{}".format(filepath, ".png"))
+        html_content = {
             'label': self.label,
             'timestamp': datetime.datetime.now().strftime("%d-%b-%Y %H:%M:%S"),
             'report': self.report,
-            'contactName': self.config['contact']['name'],
-            'contactEmail': self.config['contact']['email'],
+            'contact_name': self.config['contact']['name'],
+            'contact_email': self.config['contact']['email'],
             'fragment': fragment,
-            'imgSrc': filepath + ".png"
+            'img_src': filepath + ".png"
         }
-        HTMLfilein = open('text/fragment.html')
-        HTMLsrc = Template(HTMLfilein.read())
-        HTMLfragment = HTMLsrc.substitute(HTMLContent)
-        pdf = pydf.generate_pdf(HTMLfragment, image_quality=100, image_dpi=1000)
+        html_file_in = open('text/fragment.html')
+        html_src = Template(html_file_in.read())
+        html_fragment = html_src.substitute(html_content)
+        pdf = pydf.generate_pdf(html_fragment, image_quality=100, image_dpi=1000)
         with open(filepath + ".pdf", 'wb') as f:
             f.write(pdf)
 
-    def makeQRCode(self, fragment):
+    def make_qr_code(self, fragment):
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -131,21 +131,21 @@ class CreateFiles():
         qr.make(fit=True)
         return qr.make_image(fill_color="black", back_color="white")
 
-    def createReadme(self, dir):
+    def create_readme(self, dir):
         d = {
         'label': self.label,
         'timestamp': datetime.datetime.now().strftime("%d-%b-%Y %H:%M:%S")
         }
         filein = open('text/readme.txt')
         src = Template(filein.read())
-        readmeContent = src.substitute(d)
+        readme_content = src.substitute(d)
         readme = dir + '/README.md'
         file = open(readme, 'w')
-        file.write(textwrap.dedent(readmeContent))
+        file.write(textwrap.dedent(readme_content))
         file.close()
 
-    def cleanUp(self):
-        print("Your secrets have been split and saved as individual files. Holding these files in one place may be a security vulnerability.")
+    def clean_up(self):
+        print("Your secrets have been split and saved as individual files. Holding these files in one place is a security vulnerability.")
         print("Files:")
         pathlist = Path(self.dir).glob('**/*')
         for path in pathlist:
@@ -153,7 +153,7 @@ class CreateFiles():
         if click.confirm("Do you want to securely shred the files?", default=True):
             pathlist = Path(self.dir).glob('**/*.txt')
             for index, path in enumerate(pathlist):
-                print("Shredding {}...".format(str(path)))
+                print("_shredding {}...".format(str(path)))
                 cmd = ['shred', '-vfzu', str(path)]
                 stdoutdata = subprocess.check_output(cmd).decode('utf-8')
                 print("stdoutdata: " + stdoutdata)

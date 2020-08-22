@@ -1,8 +1,8 @@
 Shared Secret Fragment for $label
 ==================================
 Created: $timestamp
-Originator: $contactName
-Email: $contactEmail
+Originator: $contact_name
+Email: $contact_email
 This shared secret fragment can be safely shared - it cannot be used on it's own to rebuild the original secret.
 Sharing distributed secrets is a good way to safeguard important data. Re-assembling distributed secret shares
 allows the originator to recover the original secret.

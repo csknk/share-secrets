@@ -17,8 +17,8 @@ body,html{height:100%;width:100%;margin:0;padding:0;left:0;top:0;font-size:100%}
     <div class="col-6">
       <ul>
         <li>Created: <strong>$timestamp</strong></li>
-        <li>Originator: <strong>$contactName</strong></li>
-        <li>Email: <a href="mailto:$contactEmail">$contactEmail</a></li>
+        <li>Originator: <strong>$contact_name</strong></li>
+        <li>Email: <a href="mailto:$contact_email">$contact_email</a></li>
       </ul>
       <p>This shared secret fragment can be safely shared - it cannot be used on it's own to rebuild the original secret.
         Sharing distributed secrets is a good way to safeguard important data. Re-assembling distributed secret shares
@@ -26,7 +26,7 @@ body,html{height:100%;width:100%;margin:0;padding:0;left:0;top:0;font-size:100%}
       <p>If requested, please return this file to the sender or their legal representative.</p>
     </div>
     <div class="col-6">
-      <img src="$imgSrc" title="$fragment">
+      <img src="$img_src" title="$fragment">
       <p style="overflow-wrap: break-word;"><strong>$fragment</strong></p>
     </div>
   </div>
