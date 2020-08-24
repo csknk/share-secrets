@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import pathlib
 from pathlib import Path
+import os
 import subprocess
 import datetime
 import time
@@ -26,7 +27,17 @@ class CreateFiles():
         with open('config.json') as f:
             self.config = json.load(f)
 
+
     def set_base_dir(self):
+        while 1:
+            msg = "Please enter a path: blank defaults to /tmp: "
+            path = Path(input(msg) or "/tmp").expanduser()
+            if path.is_dir() and os.access(path, os.W_OK):
+                break
+            print("Invalid path or you do not have write access at that location...")
+        self.base_dir = path
+    
+    def set_base_dir_graphical(self):
         cmd = [
             'zenity',
             '--file-selection',
@@ -41,86 +52,70 @@ class CreateFiles():
 
     # Output fragments to files
     def save_to_files(self):
-        self.dir = self.base_dir + '/shared-secrets-' + str(int(time.time()))
+        subdir = "shared-secrets-" + str(int(time.time()))
+        self.dir = self.base_dir / subdir
         pathlib.Path(self.dir).mkdir(parents=True, exist_ok=True, mode=0o755)
+        for subdir in ["html", "md", "pdf", "images"]:
+            pathlib.Path(self.dir / subdir).mkdir(parents=True, exist_ok=True, mode=0o755)
         self.create_readme(self.dir)
 
         for index, fragment in enumerate(self.shares_list):
-            filepath = "{dir}/{rootname}-{label}-{index}".format(
-                dir=self.dir,
+            filename = "{rootname}-{label}-{index}".format(
                 rootname=self.config['fragments']['filenameRoot'],
                 label=self.label,
                 index=str(index + 1)
             )
-            self.create_file_markdown(fragment=fragment, filepath=filepath)
-            self.create_file_pdf(fragment=fragment, filepath=filepath)
-            self.create_file_html(fragment=fragment, filepath=filepath)
+            self.create_file(fragment=fragment, dirpath=self.dir, filename=filename, filetype="html")
+            self.create_file(fragment=fragment, dirpath=self.dir, filename=filename, filetype="md")
+            self.create_file(fragment=fragment, dirpath=self.dir, filename=filename, filetype="pdf")
 
-    def create_file_markdown(self, **kwargs):
-        if kwargs:
-            fragment = kwargs["fragment"]
-            filepath = kwargs["filepath"]
-        d = {
-        'label': self.label,
-        'timestamp': datetime.datetime.now().strftime("%d-%b-%Y %H:%M:%S"),
-        'report': self.report,
-        'contact_name': self.config['contact']['name'],
-        'contact_email': self.config['contact']['email'],
-        'fragment': fragment
-        }
-        filein = open('text/fragment.md')
-        src = Template(filein.read())
-        content = src.substitute(d)
-        file = open(filepath + ".md", 'w')
+    def write_file(self, filepath, content):
+        file = open(filepath, 'w')
         file.write(content)
         file.close()
-
-    # _output fragments to _p_d_f files
-    def create_file_html(self, **kwargs):
+ 
+    def create_file(self, filetype, **kwargs):
         if kwargs:
             fragment = kwargs["fragment"]
-            filepath = kwargs["filepath"]
+            dirpath = kwargs["dirpath"]
+            filename = kwargs["filename"]
+        
+        generic_filename = "{dirpath}/{filetype}/{filename}".format(
+                dirpath=dirpath,
+                filetype=filetype,
+                filename=filename
+                )
+        filepath = generic_filename + "." + filetype
 
-        html_content = {
-            'label': self.label,
-            'timestamp': datetime.datetime.now().strftime("%d-%b-%Y %H:%M:%S"),
-            'report': self.report,
-            'contact_name': self.config['contact']['name'],
-            'contact_email': self.config['contact']['email'],
-            'fragment': fragment,
-            'img_src': filepath + ".png"
-        }
-        filein = open('text/fragment-basic.html')
-        src = Template(filein.read())
-        file = open(filepath + ".html", 'w')
-        file.write(src.substitute(html_content))
-        file.close()
-
-    # Output fragments to pdf files
-    def create_file_pdf(self, **kwargs):
-        if kwargs:
-            fragment = kwargs["fragment"]
-            filepath = kwargs["filepath"]
-
+        image_file = "{dirpath}/images/{filename}.png".format(
+                dirpath=dirpath,
+                filename=filename
+                )
         qr_image_file = self.make_qr_code(fragment);
-        qr_image_file.save("{}{}".format(filepath, ".png"))
-        html_content = {
+        qr_image_file.save(image_file)
+
+        d = {
             'label': self.label,
             'timestamp': datetime.datetime.now().strftime("%d-%b-%Y %H:%M:%S"),
             'report': self.report,
             'contact_name': self.config['contact']['name'],
             'contact_email': self.config['contact']['email'],
             'fragment': fragment,
-            'img_src': filepath + ".png"
+            'img_src': image_file 
         }
-        html_file_in = open('text/fragment.html')
-        html_src = Template(html_file_in.read())
-        html_fragment = html_src.substitute(html_content)
-        pdf = pydf.generate_pdf(html_fragment, image_quality=100, image_dpi=1000)
-        with open(filepath + ".pdf", 'wb') as f:
-            f.write(pdf)
+        template_type = "md" if filetype == "md" else "html"
+        filein = open("text/fragment." + template_type)
+        src = Template(filein.read())
+        filein.close()
+        content = src.substitute(d)
+        if filetype == "pdf":
+            pdf = pydf.generate_pdf(content, image_quality=100, image_dpi=1000)
+            with open(filepath, 'wb') as f:
+                f.write(pdf)
+        else:
+            self.write_file(filepath, content)
 
-    def make_qr_code(self, fragment):
+        def make_qr_code(self, fragment):
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -136,10 +131,10 @@ class CreateFiles():
         'label': self.label,
         'timestamp': datetime.datetime.now().strftime("%d-%b-%Y %H:%M:%S")
         }
-        filein = open('text/readme.txt')
+        filein = open("text/readme.txt")
         src = Template(filein.read())
         readme_content = src.substitute(d)
-        readme = dir + '/README.md'
+        readme = dir / "README.md"
         file = open(readme, 'w')
         file.write(textwrap.dedent(readme_content))
         file.close()
