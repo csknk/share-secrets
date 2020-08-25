@@ -2,8 +2,8 @@
 import subprocess
 import sys
 import getopt
-from SplitSecret import SplitSecret
-from CreateFiles import CreateFiles
+from split_secret import SplitSecret
+from create_files import CreateFiles
 
 
 def main():

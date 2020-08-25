@@ -1,10 +1,5 @@
-click==6.7
-Flask==1.0.2
-itsdangerous==0.24
-Jinja2>=2.10.1
-MarkupSafe==1.0
-Pillow>=7.1.0
-python-pdf==0.36
-qrcode==6.0
-six==1.11.0
-Werkzeug==0.15.3
+click==7.1.2
+Pillow==7.2.0
+python-pdf==0.37
+qrcode==6.1
+six==1.15.0

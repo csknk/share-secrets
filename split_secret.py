@@ -1,10 +1,16 @@
-#!/usr/bin/python3
 import pathlib
 import subprocess
-from CreateFiles import CreateFiles
+from create_files import CreateFiles
 
 
 class SplitSecret:
+    """Collects data from user and splits a secret into shares.
+    
+    Requires the ssss debian package which perfoms the actual splitting by means of
+    Shamir's Secret Sharing Scheme.
+
+    The secret is split into n_shares, of which n_required are needed to recreate the secret.
+    """
     def __init__(self):
         self.n_shares = 0
         self.n_required = 0
@@ -15,6 +21,10 @@ class SplitSecret:
         self.output()
 
     def get_user_data(self):
+        """Get user data interactively.
+        
+        Sets n_shares, n_required and the label.
+        """
         self.n_shares = input("Enter the required number of shares:")
         self.n_required = input(
             "Enter the number of shares necessary to rebuild the secret:")
@@ -28,19 +38,21 @@ class SplitSecret:
         self.returned_output = subprocess.check_output(cmd)
         self.create_shares_list()
 
-    # Make a list of shares
     def create_shares_list(self):
+        """Make a list of shares."""
         result = []
         for row in self.returned_output.decode('utf-8').split('\n'):
             result.append(row.lstrip())
+        
         # Filter the last element, which is empty
         result = list(filter(None, result))
         self.report = result[0]
+        
         # Exclude the first element, which is the report
         self.shares_list = result[1:]
 
-    # Output to terminal function
     def output(self):
+        """Output to terminal."""
         print("\n{}\n{}".format(self.report, (u'\u2014' * 80)))
         for fragment in self.shares_list:
             print(fragment)
