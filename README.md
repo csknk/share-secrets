@@ -25,9 +25,9 @@ Consider the first byte:
 Share₁ = R₁
 Share₂ = R₂
 Share₃ = R₃
-Share₄ = Secret₀ XOR R₁ XOR R₂ XOR R₃ XOR R₄
+Share₄ = Secret₀ \bigoplus R₁ \bigoplus R₂ \bigoplus R₃ \bigoplus R₄
 
-If all shares ar enow XORed together, the random shares cancel out and the secret is left.  
+If all shares are now XORed together, the random shares cancel out and the secret is left.  
 
 The Current Project
 -------------------
