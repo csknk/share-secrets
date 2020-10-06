@@ -23,9 +23,12 @@ A trivial implementation would create an n of n scheme by generating n - 1 colle
 Consider the first byte:
 
 Share₁ = R₁
+
 Share₂ = R₂
+
 Share₃ = R₃
-Share₄ = Secret₀ \bigoplus R₁ \bigoplus R₂ \bigoplus R₃ \bigoplus R₄
+
+Share₄ = Secret₀ ⨁  R₁ ⨁  R₂ ⨁  R₃ ⨁  R₄
 
 If all shares are now XORed together, the random shares cancel out and the secret is left.  
 
