@@ -1,5 +1,5 @@
 click==7.1.2
-Pillow==8.3.2
+Pillow==9.0.0
 python-pdf==0.37
 qrcode==6.1
 six==1.15.0
